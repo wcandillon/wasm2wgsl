@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>wasm2wgsl - WASM to WGSL Transpiler Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a2e;
+      color: #eee;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 1rem 2rem;
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #e94560;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    #canvas {
+      width: 100%;
+      flex: 1;
+      border-radius: 8px;
+      background: #000;
+    }
+    .stats {
+      display: flex;
+      gap: 2rem;
+      padding: 1rem 0;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .stats span {
+      color: #4ecca3;
+    }
+    #info {
+      font-size: 0.8rem;
+      color: #666;
+      padding: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>wasm2wgsl</h1>
+    <div class="subtitle">WASM to WGSL ahead-of-time transpiler</div>
+  </header>
+  <main>
+    <canvas id="canvas"></canvas>
+    <div class="stats">
+      <span id="fps">FPS: --</span>
+      <span id="frametime">Frame: --</span>
+      <span id="time">Time: --</span>
+    </div>
+    <div id="info">Loading...</div>
+  </main>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
