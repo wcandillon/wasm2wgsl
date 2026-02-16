@@ -6,27 +6,11 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #1a1a2e;
-      color: #eee;
+      color: #000;
       font-family: system-ui, -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-    header {
-      padding: 1rem 2rem;
-      background: #16213e;
-      border-bottom: 1px solid #0f3460;
-    }
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #e94560;
-    }
-    .subtitle {
-      font-size: 0.9rem;
-      color: #888;
-      margin-top: 0.25rem;
     }
     main {
       flex: 1;
@@ -58,10 +42,6 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>wasm2wgsl</h1>
-    <div class="subtitle">WASM to WGSL ahead-of-time transpiler</div>
-  </header>
   <main>
     <canvas id="canvas"></canvas>
     <div class="stats">

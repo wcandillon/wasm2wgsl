@@ -34,7 +34,7 @@ extern "C" void mainImage(vec4* fragColor, float fragCoordX, float fragCoordY,
 ### 2. Compile to WASM
 
 ```bash
-./build.sh your_shader.cpp
+./build.sh example/shader2.cpp
 # Outputs: your_shader.wasm
 ```
 
@@ -46,20 +46,6 @@ Serve the files with a local web server and open `index.html`:
 python3 -m http.server 8000
 # Open http://localhost:8000/?wasm=your_shader.wasm
 ```
-
-## Supported WASM Operations
-
-The transpiler supports a comprehensive set of WASM instructions:
-
-- **Variables**: local.get/set/tee, global.get/set
-- **Constants**: i32.const, f32.const
-- **Memory**: i32.load/store, f32.load/store
-- **Comparisons**: all i32 and f32 comparison operators
-- **Arithmetic**: add, sub, mul, div, rem
-- **Bitwise**: and, or, xor, shl, shr
-- **Float unary**: abs, neg, ceil, floor, trunc, round, sqrt
-- **Control flow**: block, loop, if/else, br, br_if, return
-- **Conversions**: i32.trunc_f32, f32.convert_i32, reinterpret
 
 ## WASM Import to WGSL Built-in Mapping
 

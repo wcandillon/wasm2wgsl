@@ -7,6 +7,7 @@
 # Requires one of:
 #   brew install llvm
 #   brew install emscripten
+#   export WASM_LLVM_BIN=/path/to/llvm/bin  (directory with clang + wasm-ld)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -15,16 +16,22 @@ OUT="${SRC%.*}.wasm"
 
 # ---------- try clang + wasm-ld (Homebrew LLVM or emsdk upstream) ----------
 LLVM_BIN=""
-for dir in \
-  /opt/homebrew/opt/llvm/bin \
-  /usr/local/opt/llvm/bin \
-  "$HOME"/emsdk/upstream/bin \
-; do
-  if [ -x "$dir/clang" ] && [ -x "$dir/wasm-ld" ]; then
-    LLVM_BIN="$dir"
-    break
-  fi
-done
+
+# Check WASM_LLVM_BIN environment variable first
+if [ -n "${WASM_LLVM_BIN:-}" ] && [ -x "$WASM_LLVM_BIN/clang" ] && [ -x "$WASM_LLVM_BIN/wasm-ld" ]; then
+  LLVM_BIN="$WASM_LLVM_BIN"
+else
+  for dir in \
+    /opt/homebrew/opt/llvm/bin \
+    /usr/local/opt/llvm/bin \
+    "$HOME"/emsdk/upstream/bin \
+  ; do
+    if [ -x "$dir/clang" ] && [ -x "$dir/wasm-ld" ]; then
+      LLVM_BIN="$dir"
+      break
+    fi
+  done
+fi
 
 if [ -n "$LLVM_BIN" ]; then
   echo "Using LLVM from $LLVM_BIN"
@@ -80,4 +87,7 @@ echo ""
 echo "Install one of:"
 echo "  brew install llvm"
 echo "  brew install emscripten"
+echo ""
+echo "Or set WASM_LLVM_BIN to a directory containing clang and wasm-ld:"
+echo "  export WASM_LLVM_BIN=/path/to/llvm/bin"
 exit 1
