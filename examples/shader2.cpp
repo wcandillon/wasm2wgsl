@@ -1,6 +1,5 @@
 // XorDev "Cosmic" shader — glowing rings
-// Pure shader logic — all types and math provided by wgsl.h
-
+// https://www.shadertoy.com/view/w33cDj
 #include "wgsl.h"
 
 extern "C" void mainImage(vec4* O, float Fx, float Fy,

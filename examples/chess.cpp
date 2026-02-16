@@ -1,5 +1,5 @@
 // Chess Queen raymarcher — ported from Shadertoy GLSL to C++
-// All types and math provided by wgsl.h
+// https://www.shadertoy.com/view/3sVfW3
 
 #include "wgsl.h"
 

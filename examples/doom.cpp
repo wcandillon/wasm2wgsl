@@ -1,6 +1,5 @@
 // E1M1 - Hangar — by @P_Malin
-// Ported from GLSL to C++ for WASM→WGSL transpilation
-// All functions force-inlined → single WASM function → native WGSL compute shader
+// https://www.shadertoy.com/view/lsSXzD
 #include "wgsl.h"
 
 #define AI __attribute__((always_inline))
