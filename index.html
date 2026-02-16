@@ -2,16 +2,42 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>wasm2wgsl - WASM to WGSL Transpiler Demo</title>
+  <title>wasm2wgsl</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      color: #000;
       font-family: system-ui, -apple-system, sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      background: #fff;
     }
+    aside {
+      width: 180px;
+      padding: 1.5rem 1rem;
+      border-right: 1px solid #eee;
+    }
+    aside h2 {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    aside nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    aside a {
+      color: #333;
+      text-decoration: none;
+      padding: 0.4rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+    aside a:hover { background: #f5f5f5; }
+    aside a.active { background: #000; color: #fff; }
     main {
       flex: 1;
       display: flex;
@@ -21,27 +47,28 @@
     #canvas {
       width: 100%;
       flex: 1;
-      border-radius: 8px;
+      border-radius: 4px;
       background: #000;
     }
     .stats {
       display: flex;
       gap: 2rem;
-      padding: 1rem 0;
+      padding: 0.75rem 0;
       font-family: monospace;
-      font-size: 0.9rem;
-    }
-    .stats span {
-      color: #4ecca3;
-    }
-    #info {
       font-size: 0.8rem;
       color: #666;
-      padding: 0.5rem 0;
+    }
+    #info {
+      font-size: 0.75rem;
+      color: #999;
     }
   </style>
 </head>
 <body>
+  <aside>
+    <h2>Examples</h2>
+    <nav id="examples-nav"></nav>
+  </aside>
   <main>
     <canvas id="canvas"></canvas>
     <div class="stats">
@@ -51,6 +78,25 @@
     </div>
     <div id="info">Loading...</div>
   </main>
+  <script>
+    const examples = [
+      { name: 'Shader', file: 'shader' },
+      { name: 'Shader 2', file: 'shader2' },
+      { name: 'Chess', file: 'chess' },
+      { name: 'Raymarch', file: 'raymarch' },
+      { name: 'Doom', file: 'doom' },
+    ];
+    const nav = document.getElementById('examples-nav');
+    const params = new URLSearchParams(location.search);
+    const current = params.get('wasm') || 'examples/shader.wasm';
+    examples.forEach(ex => {
+      const a = document.createElement('a');
+      a.href = `?wasm=examples/${ex.file}.wasm`;
+      a.textContent = ex.name;
+      if (current === `examples/${ex.file}.wasm`) a.classList.add('active');
+      nav.appendChild(a);
+    });
+  </script>
   <script type="module" src="main.js"></script>
 </body>
 </html>

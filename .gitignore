@@ -4,7 +4,6 @@ node_modules/
 # Build outputs
 dist/
 build/
-*.wasm
 
 # OS files
 .DS_Store
