@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8">
   <title>wasm2wgsl</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
       display: flex;
       background: #fff;
     }
@@ -15,6 +19,8 @@
       width: 180px;
       padding: 1.5rem 1rem;
       border-right: 1px solid #eee;
+      flex-shrink: 0;
+      overflow-y: auto;
     }
     aside h2 {
       font-size: 0.75rem;
@@ -46,15 +52,26 @@
       color: #666;
     }
     aside .repo-link:hover { background: none; color: #000; }
-    main {
+    .content {
       flex: 1;
+      display: flex;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    main {
+      flex: 2;
       display: flex;
       flex-direction: column;
       padding: 1rem;
+      min-width: 0;
+      height: 100%;
+      overflow: hidden;
     }
     #canvas {
       width: 100%;
       flex: 1;
+      min-height: 0;
       border-radius: 4px;
       background: #000;
     }
@@ -65,11 +82,67 @@
       font-family: monospace;
       font-size: 0.8rem;
       color: #666;
+      flex-shrink: 0;
     }
     #info {
       font-size: 0.75rem;
       color: #999;
+      flex-shrink: 0;
     }
+    .code-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #eee;
+      background: #fafafa;
+      height: 100%;
+      overflow: hidden;
+    }
+    .code-panel-header {
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .code-panel-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+    }
+    .CodeMirror {
+      height: 100%;
+      font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+    .CodeMirror-gutters {
+      background: #fafafa;
+      border-right: 1px solid #eee;
+    }
+    .CodeMirror-linenumber {
+      color: #ccc;
+    }
+    .cm-s-default .cm-keyword { color: #d73a49; }
+    .cm-s-default .cm-atom { color: #005cc5; }
+    .cm-s-default .cm-number { color: #005cc5; }
+    .cm-s-default .cm-def { color: #6f42c1; }
+    .cm-s-default .cm-variable { color: #24292e; }
+    .cm-s-default .cm-variable-2 { color: #e36209; }
+    .cm-s-default .cm-type { color: #22863a; }
+    .cm-s-default .cm-comment { color: #6a737d; }
+    .cm-s-default .cm-string { color: #032f62; }
+    .cm-s-default .cm-operator { color: #d73a49; }
+    .cm-s-default .cm-builtin { color: #6f42c1; }
+    .CodeMirror-cursor { display: none !important; }
+    .CodeMirror-selected { background: transparent !important; }
+    .CodeMirror-focused .CodeMirror-selected { background: transparent !important; }
   </style>
 </head>
 <body>
@@ -78,15 +151,25 @@
     <h2>Examples</h2>
     <nav id="examples-nav"></nav>
   </aside>
-  <main>
-    <canvas id="canvas"></canvas>
-    <div class="stats">
-      <span id="fps">FPS: --</span>
-      <span id="frametime">Frame: --</span>
-      <span id="time">Time: --</span>
+  <div class="content">
+    <main>
+      <canvas id="canvas"></canvas>
+      <div class="stats">
+        <span id="fps">FPS: --</span>
+        <span id="frametime">Frame: --</span>
+        <span id="time">Time: --</span>
+      </div>
+      <div id="info">Loading...</div>
+    </main>
+    <div class="code-panel">
+      <div class="code-panel-header">C++ Source</div>
+      <div class="code-panel-content">
+        <textarea id="cpp-code"></textarea>
+      </div>
     </div>
-    <div id="info">Loading...</div>
-  </main>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script>
     const examples = [
       { name: 'Shader', file: 'shader' },
@@ -98,6 +181,8 @@
     const nav = document.getElementById('examples-nav');
     const params = new URLSearchParams(location.search);
     const current = params.get('wasm') || 'examples/shader.wasm';
+    const currentFile = current.replace('examples/', '').replace('.wasm', '');
+
     examples.forEach(ex => {
       const a = document.createElement('a');
       a.href = `?wasm=examples/${ex.file}.wasm`;
@@ -105,6 +190,28 @@
       if (current === `examples/${ex.file}.wasm`) a.classList.add('active');
       nav.appendChild(a);
     });
+
+    // Initialize CodeMirror
+    const editor = CodeMirror.fromTextArea(document.getElementById('cpp-code'), {
+      mode: 'text/x-c++src',
+      lineNumbers: true,
+      readOnly: true,
+      cursorBlinkRate: -1,
+      lineWrapping: false
+    });
+
+    // Load and display the C++ source code
+    async function loadCppSource() {
+      try {
+        const response = await fetch(`examples/${currentFile}.cpp`);
+        if (!response.ok) throw new Error('File not found');
+        const code = await response.text();
+        editor.setValue(code);
+      } catch (e) {
+        editor.setValue('// Source file not available');
+      }
+    }
+    loadCppSource();
   </script>
   <script type="module" src="main.js"></script>
 </body>
