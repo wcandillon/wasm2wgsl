@@ -7,9 +7,9 @@ We provide a `wgsl.h` header for GLSL-style vector/matrix types and invocations 
 ## How to use it
 
 1. Install LLVM: brew install llvm
-2. Compile a shader: ./build.sh examples/shader.cpp
+2. Compile a shader: ./build.sh examples/raymarch.cpp
 3. Serve with a web server: `npx serve .` 
-4. Open http://localhost:8000/?wasm=examples/shader.wasm
+4. Open http://localhost:3000/?wasm=examples/raymarch.wasm
 
 ## Usage
 
@@ -36,15 +36,6 @@ extern "C" void mainImage(vec4* fragColor, float fragCoordX, float fragCoordY,
 ```bash
 ./build.sh example/shader2.cpp
 # Outputs: your_shader.wasm
-```
-
-### 3. Run in browser
-
-Serve the files with a local web server and open `index.html`:
-
-```bash
-python3 -m http.server 8000
-# Open http://localhost:8000/?wasm=your_shader.wasm
 ```
 
 ## WASM Import to WGSL Built-in Mapping
